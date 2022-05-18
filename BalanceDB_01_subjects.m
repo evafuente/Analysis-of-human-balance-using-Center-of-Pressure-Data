@@ -43,7 +43,8 @@ for i=1:(DATA_PACIENT*PATIENTS)
     BalanceDB(i).ID =  ID{1,1}; %BDS with number
     BalanceDB(i).BDSfile = TempBDS_file; %BDS with number.txt
 
-    if strcmp(BDSinfo.Surface(i), 'Firm')
+%     if strcmp(BDSinfo.Surface(i), 'Foam') & strcmp(BDSinfo.AgeGroup(i), 'Old')
+      if strcmp(BDSinfo.Surface(i), 'Foam')
            COPxcm(i,:)=TempBDS_file.COPxcm;
            COPycm(i,:)=TempBDS_file.COPycm;
            
@@ -168,9 +169,6 @@ COPcm2_SA = get_sway_area(COPxcm, COPycm);
 openSA_mean = mean(get_sway_area(COPxcm_open, COPycm_open), 'all');
 closedSA_mean = mean(get_sway_area(COPxcm_closed, COPycm_closed), 'all');
 
-openSA_std = std2(get_sway_area(COPxcm_open, COPycm_open));
-closedSA_std = std2(get_sway_area(COPxcm_closed, COPycm_closed));
-
 %% CREATE NEW TABLE FOR MODEL
 load('BDSinfo_LEARN2.mat', 'BDSinfo22')
 BDSinfo_model = [head(BDSinfo22, size(COPxcm,1)) array2table(COPxcm_range_pac) array2table(COPycm_range_pac) array2table(COPxcm_mean_pac) array2table(COPycm_mean_pac) array2table(COPxcm_traj) array2table(COPycm_traj) array2table(COPxcm_vel) array2table(COPycm_vel) array2table(COPxcm_acel) array2table(COPycm_acel) array2table(COPcm2_SA)];
@@ -234,6 +232,9 @@ title('Sway area mean');
 % ylabel('COPycm')
 % xlabel('time')
 
+%% FITTING MODEL
+SA_closed=get_sway_area(COPxcm_closed, COPycm_closed);
+SA_open=get_sway_area(COPxcm_open, COPycm_open);
 %% FUNTIONS
 function [COP] = remove_zeros(COP)
     BC=sum(abs(COP),1)==0;
